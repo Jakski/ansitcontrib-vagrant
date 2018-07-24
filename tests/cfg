@@ -1,0 +1,11 @@
+Host default
+  HostName 10.0.3.203
+  User vagrant
+  Port 22
+  UserKnownHostsFile /dev/null
+  StrictHostKeyChecking no
+  PasswordAuthentication no
+  IdentityFile /home/jakub/dev/ansitcontrib-vagrant/tests/.vagrant/machines/default/lxc/private_key
+  IdentitiesOnly yes
+  LogLevel FATAL
+

@@ -1,0 +1,4 @@
+include CHANGELOG
+include README.md
+include LICENSE
+prune test

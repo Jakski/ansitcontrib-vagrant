@@ -96,5 +96,5 @@ class VagrantProvider(Provider):
             yield line
         process.communicate()
         if process.returncode != 0:
-            raise ProviderError('Command %s returned code %s:\n%s' % (
+            raise ProviderError('Command %s returned code %s' % (
                 cmd, str(process.returncode)))

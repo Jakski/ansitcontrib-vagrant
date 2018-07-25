@@ -1,4 +1,5 @@
 import subprocess
+import logging
 import shutil
 import shlex
 from collections import defaultdict
@@ -25,6 +26,9 @@ class VagrantProvider(Provider):
         self._vagrant = shutil.which('vagrant')
         if self._vagrant is None:
             raise ProviderError('vagrant executable not found')
+        paramiko_logger = logging.getLogger('paramiko')
+        paramiko_logger.setLevel(
+            min(paramiko_logger.getEffectiveLevel() + 10, 50))
 
     def up(self, machines):
         cmd = [self._vagrant, 'up']

@@ -37,7 +37,7 @@ class VagrantProvider(Provider):
         for line in self._run_command(cmd):
             yield line
         cmd[1] = 'ssh-config'
-        self._update_ssh_config(machines)
+        self._update_ssh_config()
 
     def run(self, machine, cmd):
         cfg = self.ssh_config(machine)
@@ -67,13 +67,13 @@ class VagrantProvider(Provider):
 
     def ssh_config(self, machine):
         if machine not in self._ssh_config.keys():
-            self._update_ssh_config([machine])
+            self._update_ssh_config()
         return self._ssh_config[machine]
 
-    def _update_ssh_config(self, machines):
+    def _update_ssh_config(self):
         cmd = [self._vagrant, 'ssh-config']
-        cmd.extend(machines)
-        self._parse_ssh_config(self._run_command(cmd))
+        self._parse_ssh_config(
+            self._run_command(cmd, use_stderr=False, fail_on_error=False))
 
     def _parse_ssh_config(self, lines):
         for line in lines:
@@ -93,16 +93,19 @@ class VagrantProvider(Provider):
             elif key == 'identityfile':
                 self._ssh_config[host]['private_key'] = value
 
-    def _run_command(self, cmd):
+    def _run_command(self, cmd, use_stderr=True, fail_on_error=True):
+        stderr = subprocess.STDOUT
+        if not use_stderr:
+            stderr = subprocess.DEVNULL
         process = subprocess.Popen(
             cmd,
             bufsize=1,
             stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
+            stderr=stderr,
             universal_newlines=True)
         for line in process.stdout:
             yield line
         process.communicate()
-        if process.returncode != 0:
+        if process.returncode != 0 and fail_on_error:
             raise ProviderError('Command %s returned code %s' % (
                 cmd, str(process.returncode)))

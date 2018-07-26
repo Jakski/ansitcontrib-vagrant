@@ -1,3 +1,8 @@
+## [0.2.0] - 2018-07-26
+### Changed
+- Gather SSH configuration for all machines at once, ignoring errors. Invoking
+  Vagrant before every test has tremendous overhead.
+
 ## [0.1.0] - 2018-07-26
 ### Added
 - Use PTY, if available on stdout.

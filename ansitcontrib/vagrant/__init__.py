@@ -1,4 +1,5 @@
 import subprocess
+import sys
 import logging
 import shutil
 import shlex
@@ -47,7 +48,10 @@ class VagrantProvider(Provider):
             port=cfg['port'],
             username=cfg['user'],
             key_filename=cfg['private_key'])
-        stdin, stdout, stderr = client.exec_command(cmd)
+        get_pty = False
+        if sys.stdout.isatty():
+            get_pty = True
+        stdin, stdout, stderr = client.exec_command(cmd, get_pty=get_pty)
         for line in stdout:
             yield line
         returncode = stdout.channel.recv_exit_status()
@@ -62,7 +66,7 @@ class VagrantProvider(Provider):
             yield line
 
     def ssh_config(self, machine):
-        if machine not in self._ssh_config:
+        if machine not in self._ssh_config.keys():
             self._update_ssh_config([machine])
         return self._ssh_config[machine]
 
